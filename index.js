@@ -4,8 +4,14 @@ export function greeting(name = 'world') {
   return `Hello, ${name}!`
 }
 
-const server = http.createServer((req, res) => {
+export const server = http.createServer((req, res) => {
   res.writeHead(200, { 'content-type': 'application/json' })
+
+  if (req.url === '/health') {
+    res.end(JSON.stringify({ status: 'ok' }))
+    return
+  }
+
   res.end(JSON.stringify({ message: greeting() }))
 })
 
