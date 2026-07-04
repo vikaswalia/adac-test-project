@@ -15,6 +15,11 @@ export function createServer() {
 
     res.writeHead(200, { 'content-type': 'application/json' })
 
+    if (req.method === 'GET' && req.url === '/test-issue-1001') {
+      res.end(JSON.stringify({ message: 'test issue 1001' }))
+      return
+    }
+
     if (req.method === 'GET' && req.url === '/uptime') {
       res.end(JSON.stringify({ uptime: process.uptime() }))
       return
