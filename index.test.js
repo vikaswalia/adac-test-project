@@ -45,6 +45,25 @@ test('GET /ping returns pong as plain text', async () => {
   }
 })
 
+test('GET /test-issue-1001 returns the test issue response as JSON', async () => {
+  const server = createServer()
+  await new Promise((resolve) => server.listen(0, resolve))
+
+  try {
+    const { port } = server.address()
+    const response = await fetch(`http://127.0.0.1:${port}/test-issue-1001`)
+    const body = await response.json()
+
+    assert.equal(response.status, 200)
+    assert.match(response.headers.get('content-type'), /application\/json/)
+    assert.deepEqual(body, { message: 'test issue 1001' })
+  } finally {
+    await new Promise((resolve, reject) => {
+      server.close((error) => error ? reject(error) : resolve())
+    })
+  }
+})
+
 test('non-uptime requests still return the greeting JSON', async () => {
   const server = createServer()
   await new Promise((resolve) => server.listen(0, resolve))
