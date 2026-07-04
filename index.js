@@ -7,6 +7,12 @@ export function greeting(name = 'world') {
 
 export function createServer() {
   return http.createServer((req, res) => {
+    if (req.method === 'GET' && req.url === '/ping') {
+      res.writeHead(200, { 'content-type': 'text/plain' })
+      res.end('pong')
+      return
+    }
+
     res.writeHead(200, { 'content-type': 'application/json' })
 
     if (req.method === 'GET' && req.url === '/uptime') {
