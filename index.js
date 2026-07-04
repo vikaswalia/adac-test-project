@@ -1,5 +1,6 @@
 import http from 'node:http'
 import { fileURLToPath } from 'node:url'
+import packageJson from './package.json' with { type: 'json' }
 
 export function greeting(name = 'world') {
   return `Hello, ${name}!`
@@ -17,6 +18,11 @@ export function createServer() {
 
     if (req.method === 'GET' && req.url === '/uptime') {
       res.end(JSON.stringify({ uptime: process.uptime() }))
+      return
+    }
+
+    if (req.method === 'GET' && req.url === '/version') {
+      res.end(JSON.stringify({ version: packageJson.version }))
       return
     }
 
