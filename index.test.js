@@ -29,6 +29,29 @@ test('GET /uptime returns uptime as JSON', async () => {
   }
 })
 
+test('GET /uptime-live returns uptimeSeconds as JSON', async () => {
+  const server = createServer()
+  await new Promise((resolve) => server.listen(0, resolve))
+
+  try {
+    const { port } = server.address()
+    const response = await fetch(`http://127.0.0.1:${port}/uptime-live`)
+    const body = await response.json()
+
+    assert.equal(response.status, 200)
+    assert.match(response.headers.get('content-type'), /application\/json/)
+    assert.equal(typeof body.uptimeSeconds, 'number')
+    assert.ok(body.uptimeSeconds >= 0)
+    assert.equal(typeof body.serverStartTime, 'string')
+    assert.ok(Date.parse(body.serverStartTime) <= Date.now())
+    assert.deepEqual(Object.keys(body), ['uptimeSeconds', 'serverStartTime'])
+  } finally {
+    await new Promise((resolve, reject) => {
+      server.close((error) => error ? reject(error) : resolve())
+    })
+  }
+})
+
 test('GET /version returns package version as JSON', async () => {
   const server = createServer()
   await new Promise((resolve) => server.listen(0, resolve))
