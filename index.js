@@ -28,6 +28,11 @@ export function createServer() {
       return
     }
 
+    if (req.method === 'GET' && req.url === '/speed-check') {
+      res.end(JSON.stringify({ ok: true, at: new Date().toISOString() }))
+      return
+    }
+
     if (req.method === 'GET' && req.url === '/version') {
       res.end(JSON.stringify({ version: packageJson.version }))
       return
