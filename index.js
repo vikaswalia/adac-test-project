@@ -28,6 +28,11 @@ export function createServer() {
       return
     }
 
+    if (req.method === 'GET' && req.url === '/health-mini') {
+      res.end(JSON.stringify({ ok: true }))
+      return
+    }
+
     if (req.method === 'GET' && req.url === '/version') {
       res.end(JSON.stringify({ version: packageJson.version }))
       return
