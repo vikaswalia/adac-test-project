@@ -42,7 +42,9 @@ test('GET /uptime-live returns uptimeSeconds as JSON', async () => {
     assert.match(response.headers.get('content-type'), /application\/json/)
     assert.equal(typeof body.uptimeSeconds, 'number')
     assert.ok(body.uptimeSeconds >= 0)
-    assert.deepEqual(Object.keys(body), ['uptimeSeconds'])
+    assert.equal(typeof body.serverStartTime, 'string')
+    assert.ok(Date.parse(body.serverStartTime) <= Date.now())
+    assert.deepEqual(Object.keys(body), ['uptimeSeconds', 'serverStartTime'])
   } finally {
     await new Promise((resolve, reject) => {
       server.close((error) => error ? reject(error) : resolve())

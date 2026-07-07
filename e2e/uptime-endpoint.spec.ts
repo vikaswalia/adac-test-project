@@ -18,8 +18,12 @@ test('GET /uptime-live returns a JSON uptimeSeconds value', async ({ request }) 
   expect(response.headers()['content-type']).toContain('application/json')
 
   const body = await response.json()
-  expect(body).toEqual({ uptimeSeconds: expect.any(Number) })
+  expect(body).toEqual({
+    uptimeSeconds: expect.any(Number),
+    serverStartTime: expect.any(String),
+  })
   expect(body.uptimeSeconds).toBeGreaterThanOrEqual(0)
+  expect(Date.parse(body.serverStartTime)).toBeLessThanOrEqual(Date.now())
 })
 
 test('GET /ping returns pong as plain text', async ({ request }) => {

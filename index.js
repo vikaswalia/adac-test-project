@@ -2,6 +2,8 @@ import http from 'node:http'
 import { fileURLToPath } from 'node:url'
 import packageJson from './package.json' with { type: 'json' }
 
+const serverStartTime = new Date(Date.now() - process.uptime() * 1000).toISOString()
+
 export function greeting(name = 'world') {
   return `Hello, ${name}!`
 }
@@ -22,7 +24,7 @@ export function createServer() {
     }
 
     if (req.method === 'GET' && req.url === '/uptime-live') {
-      res.end(JSON.stringify({ uptimeSeconds: process.uptime() }))
+      res.end(JSON.stringify({ uptimeSeconds: process.uptime(), serverStartTime }))
       return
     }
 
