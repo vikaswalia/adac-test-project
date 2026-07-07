@@ -71,6 +71,25 @@ test('GET /version returns package version as JSON', async () => {
   }
 })
 
+test('GET /server-info returns app name and Node version as JSON', async () => {
+  const server = createServer()
+  await new Promise((resolve) => server.listen(0, resolve))
+
+  try {
+    const { port } = server.address()
+    const response = await fetch(`http://127.0.0.1:${port}/server-info`)
+    const body = await response.json()
+
+    assert.equal(response.status, 200)
+    assert.match(response.headers.get('content-type'), /application\/json/)
+    assert.deepEqual(body, { app: packageJson.name, node: process.version })
+  } finally {
+    await new Promise((resolve, reject) => {
+      server.close((error) => error ? reject(error) : resolve())
+    })
+  }
+})
+
 test('POST /version still returns the greeting JSON', async () => {
   const server = createServer()
   await new Promise((resolve) => server.listen(0, resolve))

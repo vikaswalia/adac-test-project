@@ -33,6 +33,11 @@ export function createServer() {
       return
     }
 
+    if (req.method === 'GET' && req.url === '/server-info') {
+      res.end(JSON.stringify({ app: packageJson.name, node: process.version }))
+      return
+    }
+
     res.end(JSON.stringify({ message: greeting() }))
   })
 }
