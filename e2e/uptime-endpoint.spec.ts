@@ -11,6 +11,17 @@ test('GET /uptime returns a JSON uptime value', async ({ request }) => {
   expect(body.uptime).toBeGreaterThanOrEqual(0)
 })
 
+test('GET /uptime-live returns a JSON uptimeSeconds value', async ({ request }) => {
+  const response = await request.get('/uptime-live')
+
+  expect(response.status()).toBe(200)
+  expect(response.headers()['content-type']).toContain('application/json')
+
+  const body = await response.json()
+  expect(body).toEqual({ uptimeSeconds: expect.any(Number) })
+  expect(body.uptimeSeconds).toBeGreaterThanOrEqual(0)
+})
+
 test('GET /ping returns pong as plain text', async ({ request }) => {
   const response = await request.get('/ping')
 

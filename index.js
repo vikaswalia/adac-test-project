@@ -21,6 +21,11 @@ export function createServer() {
       return
     }
 
+    if (req.method === 'GET' && req.url === '/uptime-live') {
+      res.end(JSON.stringify({ uptimeSeconds: process.uptime() }))
+      return
+    }
+
     if (req.method === 'GET' && req.url === '/version') {
       res.end(JSON.stringify({ version: packageJson.version }))
       return
