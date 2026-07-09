@@ -19,10 +19,10 @@ test('GET /ping returns pong as plain text', async ({ request }) => {
   await expect(response.text()).resolves.toBe('pong')
 })
 
-test('non-uptime requests still return the greeting JSON', async ({ request }) => {
+test('GET /anything returns a JSON 404 error', async ({ request }) => {
   const response = await request.get('/anything')
 
-  expect(response.status()).toBe(200)
+  expect(response.status()).toBe(404)
   expect(response.headers()['content-type']).toContain('application/json')
-  await expect(response.json()).resolves.toEqual({ message: 'Hello, world!' })
+  await expect(response.json()).resolves.toEqual({ error: 'Not found' })
 })
