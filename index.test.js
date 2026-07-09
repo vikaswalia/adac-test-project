@@ -105,7 +105,7 @@ test('POST /uptime still returns the greeting JSON', async () => {
   }
 })
 
-test('non-uptime requests still return the greeting JSON', async () => {
+test('GET /anything returns a JSON 404 error', async () => {
   const server = createServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
@@ -114,9 +114,9 @@ test('non-uptime requests still return the greeting JSON', async () => {
     const response = await fetch(`http://127.0.0.1:${port}/anything`)
     const body = await response.json()
 
-    assert.equal(response.status, 200)
+    assert.equal(response.status, 404)
     assert.match(response.headers.get('content-type'), /application\/json/)
-    assert.deepEqual(body, { message: 'Hello, world!' })
+    assert.deepEqual(body, { error: 'Not found' })
   } finally {
     await new Promise((resolve, reject) => {
       server.close((error) => error ? reject(error) : resolve())
