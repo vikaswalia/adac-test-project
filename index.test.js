@@ -5,12 +5,41 @@ import { greeting, createServer } from './index.js'
 
 const packageJson = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'))
 
+function createTestServer() {
+  return createServer({ requestLogStream: null })
+}
+
 test('greeting greets the world', () => {
   assert.equal(greeting(), 'Hello, world!')
 })
 
+test('GET /ping writes a request log line', async () => {
+  const logLines = []
+  const server = createServer({
+    requestLogStream: {
+      write(line) {
+        logLines.push(line)
+      }
+    }
+  })
+  await new Promise((resolve) => server.listen(0, resolve))
+
+  try {
+    const { port } = server.address()
+    const response = await fetch(`http://127.0.0.1:${port}/ping`)
+    await response.text()
+
+    assert.equal(logLines.length, 1)
+    assert.match(logLines[0], /GET \/ping HTTP\/1\.1" 200/)
+  } finally {
+    await new Promise((resolve, reject) => {
+      server.close((error) => error ? reject(error) : resolve())
+    })
+  }
+})
+
 test('GET /uptime returns uptime as JSON', async () => {
-  const server = createServer()
+  const server = createTestServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
   try {
@@ -30,7 +59,7 @@ test('GET /uptime returns uptime as JSON', async () => {
 })
 
 test('GET /version returns package version as JSON', async () => {
-  const server = createServer()
+  const server = createTestServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
   try {
@@ -49,7 +78,7 @@ test('GET /version returns package version as JSON', async () => {
 })
 
 test('POST /version still returns the greeting JSON', async () => {
-  const server = createServer()
+  const server = createTestServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
   try {
@@ -68,7 +97,7 @@ test('POST /version still returns the greeting JSON', async () => {
 })
 
 test('GET /ping returns pong as plain text', async () => {
-  const server = createServer()
+  const server = createTestServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
   try {
@@ -87,7 +116,7 @@ test('GET /ping returns pong as plain text', async () => {
 })
 
 test('POST /uptime still returns the greeting JSON', async () => {
-  const server = createServer()
+  const server = createTestServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
   try {
@@ -106,7 +135,7 @@ test('POST /uptime still returns the greeting JSON', async () => {
 })
 
 test('GET /anything returns a JSON 404 error', async () => {
-  const server = createServer()
+  const server = createTestServer()
   await new Promise((resolve) => server.listen(0, resolve))
 
   try {
