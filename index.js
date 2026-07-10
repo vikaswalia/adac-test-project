@@ -12,7 +12,7 @@ export function createServer({ requestLogStream = process.stdout } = {}) {
 
   return http.createServer((req, res) => {
     const handleRequest = () => {
-      const knownPaths = new Set(['/ping', '/uptime', '/version'])
+      const knownPaths = new Set(['/ping', '/uptime', '/version', '/status'])
 
       if (req.method === 'GET' && req.url === '/ping') {
         res.writeHead(200, { 'content-type': 'text/plain' })
@@ -29,6 +29,12 @@ export function createServer({ requestLogStream = process.stdout } = {}) {
       if (req.method === 'GET' && req.url === '/version') {
         res.writeHead(200, { 'content-type': 'application/json' })
         res.end(JSON.stringify({ version: packageJson.version }))
+        return
+      }
+
+      if (req.method === 'GET' && req.url === '/status') {
+        res.writeHead(200, { 'content-type': 'application/json' })
+        res.end(JSON.stringify({ status: 'ok' }))
         return
       }
 
