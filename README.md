@@ -31,6 +31,7 @@ port.
 - `GET /ping` returns `pong` as plain text.
 - `GET /uptime` returns the process uptime as JSON.
 - `GET /version` returns the package version as JSON.
+- `GET /status` returns `{ "status": "ok" }` as JSON.
 - Unknown paths return a JSON `404` response.
 
 ## Testing
