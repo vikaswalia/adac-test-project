@@ -1,7 +1,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
-import { greeting, createServer } from './index.js'
+import { greeting, createServer, serializeJson } from './index.js'
 
 const packageJson = JSON.parse(await readFile(new URL('./package.json', import.meta.url), 'utf8'))
 
@@ -11,6 +11,13 @@ function createTestServer() {
 
 test('greeting greets the world', () => {
   assert.equal(greeting(), 'Hello, world!')
+})
+
+test('serializeJson rejects values that cannot be serialized as JSON', () => {
+  assert.throws(
+    () => serializeJson({ count: 1n }),
+    /Response body is not JSON serializable/
+  )
 })
 
 test('GET /ping writes a request log line', async () => {

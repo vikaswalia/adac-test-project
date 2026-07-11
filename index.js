@@ -7,6 +7,25 @@ export function greeting(name = 'world') {
   return `Hello, ${name}!`
 }
 
+export function serializeJson(body) {
+  try {
+    const serialized = JSON.stringify(body)
+
+    if (serialized === undefined) {
+      throw new TypeError('JSON.stringify returned undefined')
+    }
+
+    return serialized
+  } catch (error) {
+    throw new TypeError('Response body is not JSON serializable', { cause: error })
+  }
+}
+
+function sendJson(res, statusCode, body) {
+  res.writeHead(statusCode, { 'content-type': 'application/json' })
+  res.end(serializeJson(body))
+}
+
 export function createServer({ requestLogStream = process.stdout } = {}) {
   const requestLogger = requestLogStream ? morgan('combined', { stream: requestLogStream }) : null
 
@@ -21,14 +40,12 @@ export function createServer({ requestLogStream = process.stdout } = {}) {
       }
 
       if (req.method === 'GET' && req.url === '/uptime') {
-        res.writeHead(200, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ uptime: process.uptime() }))
+        sendJson(res, 200, { uptime: process.uptime() })
         return
       }
 
       if (req.method === 'GET' && req.url === '/version') {
-        res.writeHead(200, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ version: packageJson.version }))
+        sendJson(res, 200, { version: packageJson.version })
         return
       }
 
@@ -39,13 +56,11 @@ export function createServer({ requestLogStream = process.stdout } = {}) {
       }
 
       if (!knownPaths.has(req.url)) {
-        res.writeHead(404, { 'content-type': 'application/json' })
-        res.end(JSON.stringify({ error: 'Not found' }))
+        sendJson(res, 404, { error: 'Not found' })
         return
       }
 
-      res.writeHead(200, { 'content-type': 'application/json' })
-      res.end(JSON.stringify({ message: greeting() }))
+      sendJson(res, 200, { message: greeting() })
     }
 
     if (requestLogger) {
